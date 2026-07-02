@@ -1,4 +1,4 @@
-#The Momir Basic Format
+# The Momir Basic Format
         
 A battle of strategic wits, this format plays with decks of lands (Plains, Island, Swamp, Mountain, Forest) and one single card: Momir Vig.
             
