@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Momir Vig Generator</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=New+Rocker&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <header class="top-nav">
+      <div class="nav-brand">Momir Vig Generator</div>
+      <nav class="nav-links">
+        <a href="index.html" class="active">Home</a>
+        <a href="about.html">About Momir Basic</a>
+      </nav>
+    </header>
+
+    <main class="app-shell">
+      <section class="controls-card">
+        <div class="hero">
+          <!-- <h1>Momir Vig Generator</h1> -->
+          <p class="subtitle">
+            Change the filters below to generate a random Magic card from Scryfall that matches your criteria.
+          </p>
+        </div>
+
+        <form id="filters-form" class="filter-form">
+          
+          <label>
+            <span>Colors</span>
+            <select id="color" multiple size="7">
+              <option value="">Any</option>
+              <option value="w">White</option>
+              <option value="u">Blue</option>
+              <option value="b">Black</option>
+              <option value="r">Red</option>
+              <option value="g">Green</option>
+              <option value="c">Colorless</option>
+            </select>
+          </label>
+
+          <label class="toggle-field" for="exact-color">
+            <span class="toggle-label">Exact Colors:</span>
+            <span class="toggle-switch">
+              <input id="exact-color" type="checkbox" />
+              <span class="toggle-slider"></span>
+            </span>
+          </label>
+
+          <label>
+            <span>Card Type</span>
+            <select id="type">
+              <option value="">Any</option>
+              <option value="creature">Creature</option>
+              <option value="instant">Instant</option>
+              <option value="sorcery">Sorcery</option>
+              <option value="artifact">Artifact</option>
+              <option value="enchantment">Enchantment</option>
+              <option value="planeswalker">Planeswalker</option>
+              <option value="land">Land</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Rarity</span>
+            <select id="rarity">
+              <option value="">Any</option>
+              <option value="common">Common</option>
+              <option value="uncommon">Uncommon</option>
+              <option value="rare">Rare</option>
+              <option value="mythic">Mythic</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Mana Value</span>
+            <div class="range-control">
+              <input id="cmc" type="range" min="0" max="16" value="0" step="1" />
+              <output id="cmc-value" for="cmc">Any</output>
+            </div>
+          </label>
+
+          <label class="toggle-field" for="legendary">
+            <span class="toggle-label">Legendary:</span>
+            <span class="toggle-switch">
+              <input id="legendary" type="checkbox" />
+              <span class="toggle-slider"></span>
+            </span>
+          </label>
+
+          <label class="toggle-field" for="debug-toggle">
+            <span class="toggle-label">Debug Mode:</span>
+            <span class="toggle-switch">
+              <input id="debug-toggle" type="checkbox" />
+              <span class="toggle-slider"></span>
+            </span>
+          </label>
+
+          <button type="submit">Generate Card</button>
+
+          <div id="debug-panel" class="debug-panel hidden" aria-live="polite">
+            <strong>Debug query</strong>
+            <code id="debug-query">No query yet</code>
+            <strong>Query response</strong>
+            <code id="debug-response">No response yet</code>
+          </div>
+        </form>
+      </section>
+
+      <section class="card-card" aria-live="polite">
+        <div id="loading" class="loading hidden">Fetching a card from Scryfall…</div>
+        <div id="card-result" class="card-result">
+          <div class="placeholder">
+            <h2>Your card will appear here</h2>
+            <p>Pick your filters and let the generator do the rest.</p>
+          </div>
+        </div>
+      </section>
+      <p class="eyebrow">This website is not affiliated with Wizards of the Coast or Magic: The Gathering. Powered by Scryfall</p>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
