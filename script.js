@@ -224,11 +224,19 @@ form.addEventListener("submit", async (event) => {
         .join("\n\n") || "No oracle text available.";
 
     if (imageUri) {
+      const tiltWrapper = document.createElement("hover-tilt");
+      tiltWrapper.className = "hover-tilt-wrapper";
+      tiltWrapper.setAttribute("shadow", "false");
+      tiltWrapper.setAttribute("scale-factor", "1.02");
+      tiltWrapper.setAttribute("glare-intensity", "0.5");
+
       const image = document.createElement("img");
       image.src = imageUri;
       image.alt = titleText;
       image.className = "card-image";
-      cardFrame.appendChild(image);
+      tiltWrapper.appendChild(image);
+
+      cardFrame.appendChild(tiltWrapper);
     }
 
     const title = document.createElement("h2");

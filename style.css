@@ -300,6 +300,25 @@ button:disabled {
   gap: 18px;
 }
 
+.hover-tilt,
+.hover-tilt-wrapper {
+  display: block;
+  width: 100%;
+}
+
+.hover-tilt,
+.hover-tilt-wrapper::part(container) {
+  border-radius: 24px;
+}
+
+.hover-tilt img,
+.hover-tilt-wrapper img {
+  width: 100%;
+  border-radius: 20px;
+  object-fit: contain;
+  display: block;
+}
+
 .card-image {
   width: 100%;
   border-radius: 20px;
