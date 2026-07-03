@@ -1,12 +1,12 @@
-const form = document.getElementById('filters-form');
-const loading = document.getElementById('loading');
-const result = document.getElementById('card-result');
-const cmcSlider = document.getElementById('cmc');
-const cmcValueLabel = document.getElementById('cmc-value');
-const debugQuery = document.getElementById('debug-query');
-const debugResponse = document.getElementById('debug-response');
-const debugToggle = document.getElementById('debug-toggle');
-const debugPanel = document.getElementById('debug-panel');
+const form = document.getElementById("filters-form");
+const loading = document.getElementById("loading");
+const result = document.getElementById("card-result");
+const cmcSlider = document.getElementById("cmc");
+const cmcValueLabel = document.getElementById("cmc-value");
+const debugQuery = document.getElementById("debug-query");
+const debugResponse = document.getElementById("debug-response");
+const debugToggle = document.getElementById("debug-toggle");
+const debugPanel = document.getElementById("debug-panel");
 const generateButton = form.querySelector('button[type="submit"]');
 let lastCardId = null;
 let lastRequestTime = 0;
@@ -23,26 +23,26 @@ function restoreGenerateButton() {
     window.clearTimeout(throttleTimer);
   }
   throttleTimer = window.setTimeout(() => {
-    setGenerateButtonState(false, 'Generate Card');
+    setGenerateButtonState(false, "Generate Card");
   }, waitTime);
 }
 
 function updateCmcLabel() {
   const value = Number(cmcSlider.value);
-  cmcValueLabel.textContent = value === 16 ? '16+' : value;
+  cmcValueLabel.textContent = value === 16 ? "16+" : value;
 }
 
-cmcSlider.addEventListener('input', updateCmcLabel);
+cmcSlider.addEventListener("input", updateCmcLabel);
 
 function updateDebugVisibility() {
-  debugPanel.classList.toggle('hidden', !debugToggle.checked);
+  debugPanel.classList.toggle("hidden", !debugToggle.checked);
   if (!debugToggle.checked) {
-    debugQuery.textContent = 'Debug disabled';
-    debugResponse.textContent = 'Debug disabled';
+    debugQuery.textContent = "Debug disabled";
+    debugResponse.textContent = "Debug disabled";
   }
 }
 
-debugToggle.addEventListener('change', updateDebugVisibility);
+debugToggle.addEventListener("change", updateDebugVisibility);
 updateCmcLabel();
 updateDebugVisibility();
 
@@ -52,39 +52,43 @@ function buildSearchQuery({ color, type, rarity, cmc, legendary, exactColor }) {
   const selectedColors = Array.isArray(color) ? color : [color].filter(Boolean);
 
   if (selectedColors.length > 0) {
-    const colorClause = `${exactColor ? 'c=' : 'id:'}${selectedColors.join('')}`;
+    const colorClause = `${exactColor ? "c=" : "id:"}${selectedColors.join("")}`;
     clauses.push(colorClause);
   }
   if (type) clauses.push(`t:${type}`);
   if (rarity) clauses.push(`rarity:${rarity}`);
-  if (legendary) clauses.push('t:legendary');
+  if (legendary) clauses.push("t:legendary");
   if (!Number.isNaN(targetValue)) {
-    clauses.push(targetValue === 16 ? 'cmc>=16' : `cmc=${targetValue}`);
+    clauses.push(targetValue === 16 ? "cmc>=16" : `cmc=${targetValue}`);
   }
 
-  return clauses.join(' ');
+  return clauses.join(" ");
 }
 
 function matchesFilters(card, { color, type, rarity, cmc, legendary }) {
   const selectedColors = Array.isArray(color) ? color : [color].filter(Boolean);
   if (selectedColors.length > 0) {
-    const cardColors = (card.colors || card.color_identity || []).map((entry) => entry.toLowerCase());
-    const matchesAllColors = selectedColors.every((entry) => cardColors.includes(entry));
+    const cardColors = (card.colors || card.color_identity || []).map((entry) =>
+      entry.toLowerCase(),
+    );
+    const matchesAllColors = selectedColors.every((entry) =>
+      cardColors.includes(entry),
+    );
     if (!matchesAllColors) return false;
   }
 
   if (type) {
-    const typeLine = (card.type_line || '').toLowerCase();
+    const typeLine = (card.type_line || "").toLowerCase();
     if (!typeLine.includes(type)) return false;
   }
 
   if (rarity) {
-    if ((card.rarity || '').toLowerCase() !== rarity) return false;
+    if ((card.rarity || "").toLowerCase() !== rarity) return false;
   }
 
   if (legendary) {
-    const typeLine = (card.type_line || '').toLowerCase();
-    if (!typeLine.includes('legendary')) return false;
+    const typeLine = (card.type_line || "").toLowerCase();
+    if (!typeLine.includes("legendary")) return false;
   }
 
   const targetValue = Number(cmc);
@@ -103,11 +107,11 @@ function matchesFilters(card, { color, type, rarity, cmc, legendary }) {
 
 async function fetchMatchingCard(filters) {
   const searchQuery = buildSearchQuery(filters);
-  console.debug('Scryfall query:', searchQuery);
+  console.debug("Scryfall query:", searchQuery);
 
   for (let attempt = 0; attempt < 5; attempt += 1) {
-    const url = new URL('https://api.scryfall.com/cards/random');
-    url.searchParams.set('q', searchQuery);
+    const url = new URL("https://api.scryfall.com/cards/random");
+    url.searchParams.set("q", searchQuery);
 
     const response = await fetch(url);
     if (!response.ok) {
@@ -124,96 +128,108 @@ async function fetchMatchingCard(filters) {
     return { card, responseBody: JSON.stringify(card, null, 2) };
   }
 
-  return { card: null, responseBody: 'No matching card found' };
+  return { card: null, responseBody: "No matching card found" };
 }
 
-form.addEventListener('submit', async (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const now = Date.now();
   if (now - lastRequestTime < 1000) {
-    result.innerHTML = '<div class="placeholder"><h2>Slow down</h2><p>Please wait a moment before generating another card.</p></div>';
+    result.innerHTML =
+      '<div class="placeholder"><h2>Slow down</h2><p>Please wait a moment before generating another card.</p></div>';
     return;
   }
 
   lastRequestTime = now;
-  setGenerateButtonState(true, 'Please wait…');
+  setGenerateButtonState(true, "Please wait…");
 
-  const colorSelect = document.getElementById('color');
+  const colorSelect = document.getElementById("color");
   const selectedColors = Array.from(colorSelect.selectedOptions)
     .map((option) => option.value)
     .filter(Boolean);
 
   const filters = {
     color: selectedColors,
-    type: document.getElementById('type').value,
-    rarity: document.getElementById('rarity').value,
-    cmc: document.getElementById('cmc').value,
-    legendary: document.getElementById('legendary').checked,
-    exactColor: document.getElementById('exact-color').checked,
+    type: document.getElementById("type").value,
+    rarity: document.getElementById("rarity").value,
+    cmc: document.getElementById("cmc").value,
+    legendary: document.getElementById("legendary").checked,
+    exactColor: document.getElementById("exact-color").checked,
   };
 
   const query = buildSearchQuery(filters);
-  const url = new URL('https://api.scryfall.com/cards/random');
+  const url = new URL("https://api.scryfall.com/cards/random");
   if (query) {
-    url.searchParams.set('q', query);
+    url.searchParams.set("q", query);
   }
-  debugQuery.textContent = debugToggle.checked ? url.toString() : 'Debug disabled';
-  debugResponse.textContent = debugToggle.checked ? 'Waiting for response…' : 'Debug disabled';
+  debugQuery.textContent = debugToggle.checked
+    ? url.toString()
+    : "Debug disabled";
+  debugResponse.textContent = debugToggle.checked
+    ? "Waiting for response…"
+    : "Debug disabled";
 
-  loading.classList.remove('hidden');
-  result.innerHTML = '';
+  loading.classList.remove("hidden");
+  result.innerHTML = "";
 
   try {
     const { card, responseBody } = await fetchMatchingCard(filters);
 
     if (debugToggle.checked) {
-      debugResponse.textContent = responseBody || 'No response body returned';
+      debugResponse.textContent = responseBody || "No response body returned";
     }
 
     if (!card) {
       if (debugToggle.checked) {
-        result.innerHTML = `<div class="placeholder"><h2>No card returned</h2><p>${responseBody || 'No matching card found.'}</p></div>`;
+        result.innerHTML = `<div class="placeholder"><h2>No card returned</h2><p>${responseBody || "No matching card found."}</p></div>`;
       } else {
-        result.innerHTML = '<div class="placeholder"><h2>Something went wrong</h2><p>Please try again with a different combination.</p></div>';
+        result.innerHTML =
+          '<div class="placeholder"><h2>Something went wrong</h2><p>Please try again with a different combination.</p></div>';
       }
       return;
     }
 
-    const cardFrame = document.createElement('div');
-    cardFrame.className = 'card-frame';
+    const cardFrame = document.createElement("div");
+    cardFrame.className = "card-frame";
 
     const firstFace = card.card_faces?.[0] || card;
     const imageUri = card.image_uris?.normal || firstFace?.image_uris?.normal;
     const titleText = firstFace?.name || card.name;
-    const manaText = card.mana_cost || firstFace?.mana_cost || '';
-    const typeText = card.type_line || firstFace?.type_line || 'Unknown type';
-    const setText = card.set_name || '';
-    const oracleText = [card.oracle_text, ...(card.card_faces || []).map((face) => face.oracle_text)]
-      .filter(Boolean)
-      .join('\n\n') || 'No oracle text available.';
+    const manaText = card.mana_cost || firstFace?.mana_cost || "";
+    const typeText = card.type_line || firstFace?.type_line || "Unknown type";
+    const setText = card.set_name || "";
+    const oracleText =
+      [
+        card.oracle_text,
+        ...(card.card_faces || []).map((face) => face.oracle_text),
+      ]
+        .filter(Boolean)
+        .join("\n\n") || "No oracle text available.";
 
     if (imageUri) {
-      const image = document.createElement('img');
+      const image = document.createElement("img");
       image.src = imageUri;
       image.alt = titleText;
-      image.className = 'card-image';
+      image.className = "card-image";
       cardFrame.appendChild(image);
     }
 
-    const title = document.createElement('h2');
-    title.className = 'card-title';
+    const title = document.createElement("h2");
+    title.className = "card-title";
     title.textContent = titleText;
     cardFrame.appendChild(title);
 
-    const meta = document.createElement('p');
-    meta.className = 'card-meta';
-    meta.textContent = [manaText, typeText, setText].filter(Boolean).join(' · ');
+    const meta = document.createElement("p");
+    meta.className = "card-meta";
+    meta.textContent = [manaText, typeText, setText]
+      .filter(Boolean)
+      .join(" · ");
     cardFrame.appendChild(meta);
 
-    const text = document.createElement('p');
-    text.className = 'card-text';
-    text.innerHTML = oracleText.replace(/\n/g, '<br>');
+    const text = document.createElement("p");
+    text.className = "card-text";
+    text.innerHTML = oracleText.replace(/\n/g, "<br>");
     cardFrame.appendChild(text);
 
     result.appendChild(cardFrame);
@@ -221,10 +237,11 @@ form.addEventListener('submit', async (event) => {
     if (debugToggle.checked) {
       result.innerHTML = `<div class="placeholder"><h2>Scryfall error</h2><p>${error.message}</p></div>`;
     } else {
-      result.innerHTML = '<div class="placeholder"><h2>Something went wrong</h2><p>Please try again with a different combination.</p></div>';
+      result.innerHTML =
+        '<div class="placeholder"><h2>Something went wrong</h2><p>Please try again with a different combination.</p></div>';
     }
   } finally {
-    loading.classList.add('hidden');
+    loading.classList.add("hidden");
     restoreGenerateButton();
   }
 });

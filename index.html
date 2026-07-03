@@ -1,14 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Momir Vig Generator</title>
     <link rel="stylesheet" href="style.css" />
-    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=New+Rocker&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=New+Rocker&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <header class="top-nav">
@@ -24,12 +27,12 @@
         <div class="hero">
           <!-- <h1>Momir Vig Generator</h1> -->
           <p class="subtitle">
-            Change the filters below to generate a random Magic card from Scryfall that matches your criteria.
+            Change the filters below to generate a random Magic card from
+            Scryfall that matches your criteria.
           </p>
         </div>
 
         <form id="filters-form" class="filter-form">
-          
           <label>
             <span>Colors</span>
             <select id="color" multiple size="7">
@@ -79,7 +82,14 @@
           <label>
             <span>Mana Value</span>
             <div class="range-control">
-              <input id="cmc" type="range" min="0" max="16" value="0" step="1" />
+              <input
+                id="cmc"
+                type="range"
+                min="0"
+                max="16"
+                value="0"
+                step="1"
+              />
               <output id="cmc-value" for="cmc">Any</output>
             </div>
           </label>
@@ -112,7 +122,9 @@
       </section>
 
       <section class="card-card" aria-live="polite">
-        <div id="loading" class="loading hidden">Fetching a card from Scryfall…</div>
+        <div id="loading" class="loading hidden">
+          Fetching a card from Scryfall…
+        </div>
         <div id="card-result" class="card-result">
           <div class="placeholder">
             <h2>Your card will appear here</h2>
@@ -120,7 +132,10 @@
           </div>
         </div>
       </section>
-      <p class="eyebrow">This website is not affiliated with Wizards of the Coast or Magic: The Gathering. Powered by Scryfall</p>
+      <p class="eyebrow">
+        This website is not affiliated with Wizards of the Coast or Magic: The
+        Gathering. Powered by Scryfall
+      </p>
     </main>
 
     <script src="script.js"></script>
