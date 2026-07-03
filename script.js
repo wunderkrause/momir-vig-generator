@@ -8,6 +8,7 @@ const debugResponse = document.getElementById("debug-response");
 const debugToggle = document.getElementById("debug-toggle");
 const debugPanel = document.getElementById("debug-panel");
 const generateButton = form.querySelector('button[type="submit"]');
+const resetButton = document.getElementById("reset-filters");
 let lastCardId = null;
 let lastRequestTime = 0;
 let throttleTimer = null;
@@ -42,7 +43,22 @@ function updateDebugVisibility() {
   }
 }
 
+function resetFilters() {
+  document.getElementById("color").selectedIndex = -1;
+  document.getElementById("type").value = "";
+  document.getElementById("rarity").value = "";
+  document.getElementById("cmc").value = "0";
+  document.getElementById("legendary").checked = false;
+  document.getElementById("exact-color").checked = false;
+  cmcValueLabel.textContent = "Any";
+}
+
 debugToggle.addEventListener("change", updateDebugVisibility);
+resetButton.addEventListener("click", () => {
+  resetFilters();
+  result.innerHTML = `<div class="placeholder"><h2>Filters reset</h2><p>Select new options and generate a card.</p></div>`;
+});
+
 updateCmcLabel();
 updateDebugVisibility();
 

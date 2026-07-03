@@ -136,6 +136,20 @@ label {
   font-weight: 600;
 }
 
+.helper-text {
+  margin: 0;
+  color: #b7b1d3;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
 .toggle-field {
   display: inline-flex;
   align-items: center;
@@ -246,6 +260,70 @@ button {
   font-family: "New Rocker";
   font-size: xx-large;
   letter-spacing: 0.04em;
+}
+
+button[type="submit"] {
+  min-width: 240px;
+  flex: 1 1 auto;
+}
+
+button.secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e6e1ff;
+  font-weight: 600;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 7, 13, 0.85);
+  color: #e8e6ff;
+  font-weight: 700;
+  text-align: center;
+  padding: 20px;
+}
+
+.card-result {
+  min-height: 360px;
+}
+
+.card-frame {
+  display: grid;
+  gap: 18px;
+}
+
+.card-image {
+  width: 100%;
+  border-radius: 20px;
+  object-fit: contain;
+}
+
+.card-title {
+  margin: 0;
+}
+
+.card-meta,
+.card-text {
+  margin: 0;
+  line-height: 1.5;
+}
+
+@media (max-width: 980px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+  .controls-card,
+  .card-card {
+    min-height: auto;
+  }
 }
 
 button:hover {

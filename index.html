@@ -36,7 +36,6 @@
           <label>
             <span>Colors</span>
             <select id="color" multiple size="7">
-              <option value="">Any</option>
               <option value="w">White</option>
               <option value="u">Blue</option>
               <option value="b">Black</option>
@@ -44,6 +43,10 @@
               <option value="g">Green</option>
               <option value="c">Colorless</option>
             </select>
+            <p class="helper-text">
+              Hold Ctrl/Cmd to choose multiple colors. Leave unselected for any
+              color.
+            </p>
           </label>
 
           <label class="toggle-field" for="exact-color">
@@ -110,7 +113,14 @@
             </span>
           </label>
 
-          <button type="submit">Generate Card</button>
+          <div class="filter-actions">
+            <button type="submit">Generate Card</button>
+          </div>
+          <div class="filter-actions">
+            <button type="button" id="reset-filters" class="secondary">
+              Reset Filters
+            </button>
+          </div>
 
           <div id="debug-panel" class="debug-panel hidden" aria-live="polite">
             <strong>Debug query</strong>
