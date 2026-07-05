@@ -273,6 +273,12 @@ button.secondary {
   font-weight: 600;
 }
 
+button.secondary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: none;
+}
+
 button:disabled {
   opacity: 0.55;
   cursor: not-allowed;
@@ -472,6 +478,58 @@ button:disabled {
 
 .hidden {
   display: none;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .card-card,
+  .card-card * {
+    visibility: visible;
+  }
+
+  .card-card {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    min-height: auto;
+    padding: 0;
+    background: white;
+    border: none;
+    box-shadow: none;
+  }
+
+  .card-result {
+    min-height: auto;
+    display: block;
+    place-items: unset;
+    text-align: center;
+  }
+
+  .card-frame {
+    max-width: 100%;
+    width: auto;
+    margin: 0 auto;
+    page-break-inside: avoid;
+  }
+
+  .card-image {
+    filter: grayscale(1) !important;
+    -webkit-filter: grayscale(1) !important;
+    box-shadow: none;
+  }
+
+  .card-title,
+  .card-meta,
+  .card-text {
+    color: #000 !important;
+  }
+
+  .placeholder {
+    display: none;
+  }
 }
 
 @media (max-width: 800px) {

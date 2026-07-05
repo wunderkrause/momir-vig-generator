@@ -9,9 +9,11 @@ const debugToggle = document.getElementById("debug-toggle");
 const debugPanel = document.getElementById("debug-panel");
 const generateButton = form.querySelector('button[type="submit"]');
 const resetButton = document.getElementById("reset-filters");
+const printButton = document.getElementById("print-card");
 let lastCardId = null;
 let lastRequestTime = 0;
 let throttleTimer = null;
+let hasGeneratedCard = false;
 
 function setGenerateButtonState(isDisabled, label) {
   generateButton.disabled = isDisabled;
@@ -26,6 +28,10 @@ function restoreGenerateButton() {
   throttleTimer = window.setTimeout(() => {
     setGenerateButtonState(false, "Generate Card");
   }, waitTime);
+}
+
+function setPrintButtonState(isEnabled) {
+  printButton.disabled = !isEnabled;
 }
 
 function updateCmcLabel() {
@@ -54,13 +60,23 @@ function resetFilters() {
 }
 
 debugToggle.addEventListener("change", updateDebugVisibility);
+printButton.addEventListener("click", () => {
+  if (printButton.disabled) {
+    return;
+  }
+
+  window.print();
+});
 resetButton.addEventListener("click", () => {
   resetFilters();
+  hasGeneratedCard = false;
+  setPrintButtonState(false);
   result.innerHTML = `<div class="placeholder"><h2>Filters reset</h2><p>Select new options and generate a card.</p></div>`;
 });
 
 updateCmcLabel();
 updateDebugVisibility();
+setPrintButtonState(false);
 
 function buildSearchQuery({ color, type, rarity, cmc, legendary, exactColor }) {
   const clauses = [];
@@ -257,6 +273,8 @@ form.addEventListener("submit", async (event) => {
     cardFrame.appendChild(text);
 
     result.appendChild(cardFrame);
+    hasGeneratedCard = true;
+    setPrintButtonState(true);
   } catch (error) {
     if (debugToggle.checked) {
       result.innerHTML = `<div class="placeholder"><h2>Scryfall error</h2><p>${error.message}</p></div>`;
