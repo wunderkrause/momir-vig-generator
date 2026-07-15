@@ -80,7 +80,7 @@ function resetFilters() {
   document.getElementById("legendary").checked = false;
   document.getElementById("exact-color").checked = false;
   //cmcSlider.disabled = true;
-  //cmcValueLabel.textContent = "Any";
+  cmcValueLabel.textContent = "0";
 }
 
 debugToggle.addEventListener("change", updateDebugVisibility);
