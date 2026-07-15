@@ -84,6 +84,12 @@ function resetFilters() {
 }
 
 debugToggle.addEventListener("change", updateDebugVisibility);
+window.addEventListener("beforeprint", () => {
+  document.body.classList.add("print-image-only");
+});
+window.addEventListener("afterprint", () => {
+  document.body.classList.remove("print-image-only");
+});
 printButton.addEventListener("click", () => {
   if (printButton.disabled) {
     return;
@@ -167,6 +173,40 @@ function matchesFilters(card, { color, type, rarity, cmc, legendary, cmcAny }) {
   }
 
   return true;
+}
+
+function replaceWithManaSymbols(text) {
+  if (!text) return "";
+
+  // Regular expression to match any content inside curly braces {}
+  return text.replace(/\{([^}]+)\}/g, (match, code) => {
+    // 1. Clean the code string: trim spaces, lowercase it, and remove any internal slashes
+    let cleanCode = code.trim().toLowerCase();
+
+    // Tracks extra CSS utility classes needed for special symbols
+    let extraClasses = "ms-cost";
+
+    // 2. Handle special non-cost symbols (Tap, Untap, Chaos, etc.)
+    if (cleanCode === "t") {
+      cleanCode = "tap";
+      extraClasses = ""; // Tap doesn't use the circular .ms-cost background
+    } else if (cleanCode === "q") {
+      cleanCode = "untap";
+      extraClasses = "";
+    } else if (cleanCode === "chaos") {
+      extraClasses = "";
+    }
+
+    // 3. Handle hybrid/split mana codes containing slashes (e.g., "w/u" or "2/b")
+    // Mana font styles split classes sequentially without slashes: .ms-wu or .ms-2b
+    if (cleanCode.includes("/")) {
+      cleanCode = cleanCode.replace(/\//g, "");
+    }
+
+    // 4. Return the fully formed Mana Font HTML element
+    // Using a template literal to inject the modified class names cleanly
+    return `<i class="ms ms-${cleanCode}${extraClasses ? " " + extraClasses : ""}" aria-label="${code} mana"></i>`;
+  });
 }
 
 async function fetchMatchingCard(filters) {
@@ -298,12 +338,24 @@ form.addEventListener("submit", async (event) => {
     meta.textContent = [manaText, typeText, setText]
       .filter(Boolean)
       .join(" · ");
+    meta.innerHTML = replaceWithManaSymbols(meta.textContent);
     cardFrame.appendChild(meta);
 
     const text = document.createElement("p");
     text.className = "card-text";
     text.innerHTML = oracleText.replace(/\n/g, "<br>");
+    text.innerHTML = replaceWithManaSymbols(text.innerHTML);
     cardFrame.appendChild(text);
+
+    if (card.scryfall_uri) {
+      const link = document.createElement("a");
+      link.href = card.scryfall_uri;
+      link.target = "_blank";
+      link.rel = "noreferrer";
+      link.className = "card-link";
+      link.textContent = "View on Scryfall";
+      cardFrame.appendChild(link);
+    }
 
     result.appendChild(cardFrame);
     hasGeneratedCard = true;
@@ -313,7 +365,7 @@ form.addEventListener("submit", async (event) => {
       result.innerHTML = `<div class="placeholder"><h2>Scryfall error</h2><p>${error.message}</p></div>`;
     } else {
       result.innerHTML =
-        '<div class="placeholder"><hover-tilt class="hover-tilt-wrapper" shadow="false" scale-factor="1.02" glare-intensity="0.5"><img src="https://cards.scryfall.io/display/front/1/5/151e0e5d-656e-4bec-8110-f31a3bb5f014.webp?1783942309" alt="Door to Nothingness" class="card-image"></hover-tilt><h2>Something went wrong</h2><p>Please try again with a different combination.</p></div>';
+        '<div class="card-frame"><hover-tilt class="hover-tilt-wrapper" shadow="false" scale-factor="1.02" glare-intensity="0.5"><img src="https://cards.scryfall.io/display/front/1/5/151e0e5d-656e-4bec-8110-f31a3bb5f014.webp?1783942309" alt="Door to Nothingness" class="card-image"></hover-tilt><h2>Well that was awkward.</h2><p>Please try again with a different combination.</p></div>';
     }
   } finally {
     loading.classList.add("hidden");
