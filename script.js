@@ -79,7 +79,7 @@ function resetFilters() {
   document.getElementById("cmc-any").checked = false;
   document.getElementById("legendary").checked = false;
   document.getElementById("exact-color").checked = false;
-  //cmcSlider.disabled = true;
+  cmcSlider.disabled = false;
   cmcValueLabel.textContent = "0";
 }
 
