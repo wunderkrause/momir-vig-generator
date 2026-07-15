@@ -3,6 +3,7 @@ const loading = document.getElementById("loading");
 const result = document.getElementById("card-result");
 const cmcSlider = document.getElementById("cmc");
 const cmcValueLabel = document.getElementById("cmc-value");
+const cmcAnyToggle = document.getElementById("cmc-any");
 const debugQuery = document.getElementById("debug-query");
 const debugResponse = document.getElementById("debug-response");
 const debugToggle = document.getElementById("debug-toggle");
@@ -34,12 +35,33 @@ function setPrintButtonState(isEnabled) {
   printButton.disabled = !isEnabled;
 }
 
+function getEffectiveCmc(cmcValue, cmcAny) {
+  if (cmcAny) {
+    return null;
+  }
+
+  const numericValue = Number(cmcValue);
+  if (Number.isNaN(numericValue)) {
+    return null;
+  }
+
+  return numericValue;
+}
+
 function updateCmcLabel() {
+  cmcSlider.disabled = cmcAnyToggle.checked;
+
+  if (cmcAnyToggle.checked) {
+    cmcValueLabel.textContent = "Any";
+    return;
+  }
+
   const value = Number(cmcSlider.value);
   cmcValueLabel.textContent = value === 16 ? "16+" : value;
 }
 
 cmcSlider.addEventListener("input", updateCmcLabel);
+cmcAnyToggle.addEventListener("change", updateCmcLabel);
 
 function updateDebugVisibility() {
   debugPanel.classList.toggle("hidden", !debugToggle.checked);
@@ -54,8 +76,10 @@ function resetFilters() {
   document.getElementById("type").value = "";
   document.getElementById("rarity").value = "";
   document.getElementById("cmc").value = "0";
+  document.getElementById("cmc-any").checked = false;
   document.getElementById("legendary").checked = false;
   document.getElementById("exact-color").checked = false;
+  cmcSlider.disabled = true;
   cmcValueLabel.textContent = "Any";
 }
 
@@ -78,9 +102,17 @@ updateCmcLabel();
 updateDebugVisibility();
 setPrintButtonState(false);
 
-function buildSearchQuery({ color, type, rarity, cmc, legendary, exactColor }) {
+function buildSearchQuery({
+  color,
+  type,
+  rarity,
+  cmc,
+  legendary,
+  exactColor,
+  cmcAny,
+}) {
   const clauses = [];
-  const targetValue = Number(cmc);
+  const effectiveCmc = getEffectiveCmc(cmc, cmcAny);
   const selectedColors = Array.isArray(color) ? color : [color].filter(Boolean);
 
   if (selectedColors.length > 0) {
@@ -90,14 +122,14 @@ function buildSearchQuery({ color, type, rarity, cmc, legendary, exactColor }) {
   if (type) clauses.push(`t:${type}`);
   if (rarity) clauses.push(`rarity:${rarity}`);
   if (legendary) clauses.push("t:legendary");
-  if (!Number.isNaN(targetValue)) {
-    clauses.push(targetValue === 16 ? "cmc>=16" : `cmc=${targetValue}`);
+  if (effectiveCmc !== null) {
+    clauses.push(effectiveCmc === 16 ? "cmc>=16" : `cmc=${effectiveCmc}`);
   }
 
   return clauses.join(" ");
 }
 
-function matchesFilters(card, { color, type, rarity, cmc, legendary }) {
+function matchesFilters(card, { color, type, rarity, cmc, legendary, cmcAny }) {
   const selectedColors = Array.isArray(color) ? color : [color].filter(Boolean);
   if (selectedColors.length > 0) {
     const cardColors = (card.colors || card.color_identity || []).map((entry) =>
@@ -123,13 +155,13 @@ function matchesFilters(card, { color, type, rarity, cmc, legendary }) {
     if (!typeLine.includes("legendary")) return false;
   }
 
-  const targetValue = Number(cmc);
-  if (!Number.isNaN(targetValue)) {
+  const effectiveCmc = getEffectiveCmc(cmc, cmcAny);
+  if (!cmcAny && effectiveCmc !== null) {
     const manaValue = Number(card.cmc);
 
-    if (targetValue === 16) {
+    if (effectiveCmc === 16) {
       if (manaValue < 16) return false;
-    } else if (manaValue !== targetValue) {
+    } else if (manaValue !== effectiveCmc) {
       return false;
     }
   }
@@ -187,6 +219,7 @@ form.addEventListener("submit", async (event) => {
     rarity: document.getElementById("rarity").value,
     cmc: document.getElementById("cmc").value,
     legendary: document.getElementById("legendary").checked,
+    cmcAny: document.getElementById("cmc-any").checked,
     exactColor: document.getElementById("exact-color").checked,
   };
 
@@ -280,7 +313,7 @@ form.addEventListener("submit", async (event) => {
       result.innerHTML = `<div class="placeholder"><h2>Scryfall error</h2><p>${error.message}</p></div>`;
     } else {
       result.innerHTML =
-        '<div class="placeholder"><h2>Something went wrong</h2><p>Please try again with a different combination.</p></div>';
+        '<div class="placeholder"><hover-tilt class="hover-tilt-wrapper" shadow="false" scale-factor="1.02" glare-intensity="0.5"><img src="https://cards.scryfall.io/display/front/1/5/151e0e5d-656e-4bec-8110-f31a3bb5f014.webp?1783942309" alt="Door to Nothingness" class="card-image"></hover-tilt><h2>Something went wrong</h2><p>Please try again with a different combination.</p></div>';
     }
   } finally {
     loading.classList.add("hidden");

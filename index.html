@@ -10,6 +10,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=New+Rocker&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="HandheldFriendly" content="true">
 </head>
 
 <body>
@@ -59,7 +62,7 @@
         <label>
           <span>Card Type</span>
           <select id="type">
-            <option value="">Any</option>
+            <option value="">All Types</option>
             <option value="creature">Creature</option>
             <option value="instant">Instant</option>
             <option value="sorcery">Sorcery</option>
@@ -73,7 +76,7 @@
         <label>
           <span>Rarity</span>
           <select id="rarity">
-            <option value="">Any</option>
+            <option value="">All Rarities</option>
             <option value="common">Common</option>
             <option value="uncommon">Uncommon</option>
             <option value="rare">Rare</option>
@@ -87,6 +90,14 @@
             <input id="cmc" type="range" min="0" max="16" value="0" step="1" />
             <output id="cmc-value" for="cmc">Any</output>
           </div>
+        </label>
+
+        <label class="toggle-field" for="cmc-any">
+          <span class="toggle-label">Any Mana Value:</span>
+          <span class="toggle-switch">
+            <input id="cmc-any" type="checkbox" />
+            <span class="toggle-slider"></span>
+          </span>
         </label>
 
         <label class="toggle-field" for="legendary">
@@ -138,8 +149,9 @@
       </div>
     </section>
     <p class="eyebrow">
-      This website is not affiliated with Wizards of the Coast or Magic: The
-      Gathering. Powered by Scryfall
+      This website contains unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by
+      Wizards. Portions of the materials used are property of Wizards of the Coast. ©Wizards of the Coast LLC. Powered
+      by Scryfall
     </p>
   </main>
 
